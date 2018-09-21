@@ -24,7 +24,6 @@
 # @since: 09/17/2018
 # @summary: Script to resize dir of images.
 # ====================================================================
-
 import os, sys
 import argparse
 from PIL import Image
