@@ -1,0 +1,15 @@
+# Generated files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+Debug/
+Release/
+
+# IDE folders
+.idea/
+.vs
