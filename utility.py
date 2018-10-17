@@ -1,26 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #====================================================================
-# Copyright (c) 2016-2018 Joe Del Rocco
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-#====================================================================
 # @author: Joe Del Rocco
 # @since: 10/25/2016
 # @summary: A module with general useful functionality.
@@ -46,6 +26,12 @@ Normalize a number between 0-1.
 '''
 def normalize(n, minval, maxval):
     return float(n-minval)/float(maxval-minval)
+
+'''
+Function to return the nth root of a radicand.
+'''
+def nthRoot(radicand, root):
+    return radicand ** (1.0/root)
 
 '''
 Function that takes a RECT and ensures that it is forward facing (x,y in top left, width >= 0, height >= 0).
@@ -74,6 +60,15 @@ Use this for natural (human) sorting. Pass this as a key to a function that take
 RegexDigits = re.compile('([0-9]+)')
 def naturalSortKey(s, _nsre=RegexDigits):
     return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
+
+'''
+Use this to iterate over a sequence taking into account a step size.
+:param seq: The sequence to iterate over.
+:param step: The step size.
+:author: https://stackoverflow.com/a/434328/1002098
+'''
+def chunker(seq, step):
+    return (seq[pos:pos + step] for pos in range(0, len(seq), step))
 
 '''
 Verify that a string is a valid date or datetime
