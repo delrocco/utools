@@ -28,6 +28,20 @@ def normalize(n, minval, maxval):
     return float(n-minval)/float(maxval-minval)
 
 '''
+Compute slope/scale between two numeric ranges.
+https://stackoverflow.com/a/5732390/1002098
+'''
+def mapRangeSlope(amin, amax, bmin, bmax):
+    return (bmax - bmin) / (amax - amin)
+
+'''
+Map an input from one range to another range given start of ranges and slope/scale between them.
+https://stackoverflow.com/a/5732390/1002098
+'''
+def mapRange(x, amin, bmin, slope):
+    return bmin + slope * (x - amin)
+
+'''
 Function to return the nth root of a radicand.
 '''
 def nthRoot(radicand, root):
