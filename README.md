@@ -1,6 +1,6 @@
 # utools
 
-A collection of various utility / tool scripts I've used over the years.
+A collection of various utilities / tool scripts (hence utools) I've written over the years.
 
 ### Requirements
 
@@ -14,11 +14,9 @@ Some scripts require specific modules like: PIL, pandas, numpy, etc.
 | `delfiles.py`   | find/delete dirs of files by extension |
 | `resizeimgs.py` | resize dirs of imgs respecting aspect ratio |
 | `swapcols.py`   | swap 2 cols of a .csv file |
-| `utility.py`    | utility script with helpful general purpose functions |
-| `oneoffs/`      | one-off scripts that served a specific purpose, provided for src ideas |   
+| `utility.py`    | utility script with very helpful general purpose functions |
+| `oneoffs/`      | one-off scripts which served a specific purpose; provided for src ideas |   
 
 ### Notes
 
-Sometimes I find myself needing a specific shell/Python script and I don't immediately find it online. So I write it. Here I have provided some. Hopefully these help someone else :)  
-Feel free to use or copy/paste whatever you want.  
-Good luck!  
+Sometimes I find myself needing a specific shell/Python script, but can't immediately find one online. Here are a few I've written over the years. Feel free to use or copy/paste whatever you want. Hopefully these help someone else too. Good luck! 
