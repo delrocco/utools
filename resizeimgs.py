@@ -10,22 +10,29 @@ import argparse
 from PIL import Image
 
 
+IMGTypes = ['JPEG','PNG','GIF','BMP','TIFF']
+IMGExt = ['.jpg','.png','.gif','.bmp','.tiff']
+IMGTypeIdxMap = {t:i for i,t in enumerate(IMGTypes)}
+
 def resizeImages(args):
     for fname in os.listdir(args.dir):
-        r,ext = os.path.splitext(fname)
-        if ext.lower() != ".jpg":
+        path,ext = os.path.splitext(fname)
+        if ext.lower() not in IMGExt:
             continue
 
+        typeidx = IMGTypeIdxMap[args.type]
+
         filein = os.path.join(args.dir, fname)
-        fileout = os.path.join(args.dirout, fname)
+        fileout = os.path.join(args.dirout, path + IMGExt[typeidx])
 
         try:
             img = Image.open(filein)
-            if img.width > img.height:
+            landscape = img.width > img.height
+            if (landscape and args.landscape) or (not landscape and not args.landscape):
                 img = img.resize(args.dim, Image.ANTIALIAS)
             else:
                 img = img.resize(args.dimrot, Image.ANTIALIAS)
-            img.save(fileout, 'JPEG', quality=args.quality)
+            img.save(fileout, args.type, quality=args.quality)
         except IOError:
             print("Error: could not resize: " + filein)
 
@@ -36,6 +43,7 @@ def main():
     parser.add_argument('dir', help='a directory of images')
     parser.add_argument('-d', '--dim', dest='dim', type=int, nargs=2, default=(1024,768), help='dimensions as ints (def 1024 768)')
     parser.add_argument('-q', '--quality', dest='quality', type=int, default=90, help='quality 1-95 (def 90)')
+    parser.add_argument('-t', '--type', dest='type', type=str, default='JPEG', help='type to save as (def JPEG)')
     args = parser.parse_args()
 
     # dir not found
@@ -47,6 +55,7 @@ def main():
     if isinstance(args.dim, list):
         args.dim = tuple(args.dim)
     args.dimrot = (args.dim[1], args.dim[0])
+    args.landscape = args.dim[0] > args.dim[1]
 
     # create output dir if necessary
     args.dirout = os.path.join(args.dir, "resized")
