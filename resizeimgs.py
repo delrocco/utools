@@ -11,19 +11,19 @@ from PIL import Image
 
 
 IMGTypes = ['JPEG','PNG','GIF','BMP','TIFF']
-IMGExt = ['.jpg','.png','.gif','.bmp','.tiff']
+IMGTypeExts = ['.jpg','.png','.gif','.bmp','.tiff']
 IMGTypeIdxMap = {t:i for i,t in enumerate(IMGTypes)}
+IMGExtsPossible = ['.jpg','.jpeg','.png','.gif','.bmp','.tiff','.eps','.ico','.pcx']
 
 def resizeImages(args):
     for fname in os.listdir(args.dir):
         path,ext = os.path.splitext(fname)
-        if ext.lower() not in IMGExt:
+        if ext.lower() not in IMGExtsPossible:
             continue
 
         typeidx = IMGTypeIdxMap[args.type]
-
         filein = os.path.join(args.dir, fname)
-        fileout = os.path.join(args.dirout, path + IMGExt[typeidx])
+        fileout = os.path.join(args.dirout, path + IMGTypeExts[typeidx])
 
         try:
             img = Image.open(filein)
