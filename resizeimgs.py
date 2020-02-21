@@ -28,12 +28,18 @@ def resizeImages(args):
         try:
             img = Image.open(filein)
             landscape = img.width > img.height
+            # resize appropriately
             if (landscape and args.landscape) or (not landscape and not args.landscape):
                 img = img.resize(args.dim, Image.ANTIALIAS)
             else:
                 img = img.resize(args.dimrot, Image.ANTIALIAS)
+            # drop alpha channel if necessary
+            if typeidx == 0 or typeidx == 2 or typeidx == 3:
+                if img.mode == 'RGBA' or 'transparency' in img.info:
+                    img = img.convert('RGB')
+            # save
             img.save(fileout, args.type, quality=args.quality)
-        except IOError:
+        except IOError as e:
             print("Error: could not resize: " + filein)
 
 def main():
