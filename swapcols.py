@@ -5,7 +5,8 @@
 # @since: 05/16/2018
 # @summary: Script to swap 2 columns of a .csv file.
 # ====================================================================
-import os, sys
+import os
+import sys
 import argparse
 import pandas as pd
 
