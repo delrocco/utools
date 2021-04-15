@@ -11,6 +11,7 @@ Some scripts require specific modules like: PIL, pandas, numpy, etc.
 
 | script          | description |
 | :---            | :--- |
+| `colorbar.py`   | generate colorbar only images w/ params |
 | `delfiles.py`   | find/delete dirs of files by extension |
 | `resizeimgs.py` | resize dirs of imgs respecting aspect ratio |
 | `swapcols.py`   | swap 2 cols of a .csv file |
