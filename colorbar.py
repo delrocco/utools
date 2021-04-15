@@ -10,34 +10,27 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 
+# possible colormaps for false color renders?
+# cmap = plt.get_cmap("viridis")
+# cmap = plt.cm.cool
+# cmap = plt.get_cmap("Blues_r")
+# cmap = mpl.colors.LinearSegmentedColormap.from_list("", ["blue", "white", "red"])
+# cmap = ReNormColormapAdaptor(mpl.cm.jet, mpl.colors.LogNorm(0, maxrad))
+# cmap = mpl.colors.LinearSegmentedColormap.from_list("", ["mediumblue", "white", "xkcd:fire engine red"])
+
+
 def main():
     # handle command line args
     parser = argparse.ArgumentParser(description='Script to produce a colorbar only figure.', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_help = True
     parser.add_argument('-v', '--vertical', dest='vertical', action='store_true', default=False, help='vertical?')
-    parser.add_argument('-l', '--label', dest='label', type=str, default='', help='text string label')
     parser.add_argument('-b', '--bounds', dest='bounds', type=float, nargs='*', default=[0, 100], help='bounds [min, max]')
     parser.add_argument('-c', '--colors', dest='colors', type=str, nargs='*', default=['#000000', '#00ff00'], help='list of colors')
+    parser.add_argument('-l', '--label', dest='label', type=str, default='', help='text string label')
+    parser.add_argument('-t', '--textsize', dest='textsize', type=str, default='x-large', help='medium, large, x-large, ...')
     parser.add_argument('-f', '--filename', dest='filename', type=str, default='colorbar', help='saved as this name')
     parser.add_argument('-x', '--extension', dest='extension', type=str, default='pdf', help='saved w/ this extension')
     args = parser.parse_args()
-
-    # configure matplotlib
-    params = {'legend.fontsize': 'large',
-              'axes.labelsize': 'large',
-              'axes.titlesize': 'x-large',
-              'xtick.labelsize': 'medium',
-              'ytick.labelsize': 'large'}
-    plt.rcParams.update(params)
-    # plt.locator_params(axis="x", integer=True)
-
-    # colormaps for colors for false color renders
-    #cmap = plt.get_cmap("viridis")
-    #cmap = plt.cm.cool
-    #cmap = plt.get_cmap("Blues_r")
-    #cmap = mpl.colors.LinearSegmentedColormap.from_list("", ["blue", "white", "red"])
-    #cmap = ReNormColormapAdaptor(mpl.cm.jet, mpl.colors.LogNorm(0, maxrad))
-    #cmap = mpl.colors.LinearSegmentedColormap.from_list("", ["mediumblue", "white", "xkcd:fire engine red"])
 
     # check orientation
     if args.vertical:
@@ -50,6 +43,15 @@ def main():
         args.rotation = 'vertical'
         args.szfig = (3, 1)
         args.szaxis = [0, 0, 1, 0.25]
+
+    # configure matplotlib
+    params = {'legend.fontsize': args.textsize,
+              'axes.labelsize': args.textsize,
+              'axes.titlesize': args.textsize,
+              'xtick.labelsize': args.textsize,
+              'ytick.labelsize': args.textsize}
+    plt.rcParams.update(params)
+    # plt.locator_params(axis="x", integer=True)
 
     # do it!
     cmap = mpl.colors.LinearSegmentedColormap.from_list("", args.colors)
