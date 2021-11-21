@@ -59,6 +59,7 @@ def main():
     ax1 = fig.add_axes(args.szaxis)
     norm = mpl.colors.Normalize(vmin=args.bounds[0], vmax=args.bounds[1])
     cb = mpl.colorbar.ColorbarBase(ax1, cmap=cmap, norm=norm, orientation=args.orientation)
+    #cb.set_ticks([50,200,400,600,750])
     cb.ax.set_yticklabels(cb.ax.get_yticklabels(), rotation=args.rotation)
     cb.set_label(args.label)
     fig.savefig(args.filename + '.' + args.extension, dpi=600, bbox_inches='tight', pad_inches=0)
