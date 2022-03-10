@@ -18,3 +18,5 @@ Release/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+oneoffs/desktop.ini
+*.ini
