@@ -8,14 +8,26 @@
 import os
 import sys
 import io
+#import shutil
+#import asyncio
+from concurrent.futures import ProcessPoolExecutor
 import argparse
-import shutil
+import operator
 import csv
+from datetime import date
 
 
 datafiles = "datafiles.csv"
 # datafiles_prev = "datafiles_prev.csv"
 # report = "report.csv"
+
+# '''
+# Helper function for concurrency that runs a separate thread for some job
+# '''
+# def background(f):
+#     def wrapped(*args, **kwargs):
+#         return asyncio.get_event_loop().run_in_executor(None, f, *args, **kwargs)
+#     return wrapped
 
 '''
 Helper function that returns a list of all files, directories, or both, immediate or recursive.
@@ -65,11 +77,31 @@ def findFiles(dirpath, mode=0, recursive=False, ext=[]):
                     stuff.append(fullpath)
     return stuff
 
+'''
+Function that actually reads and processes a single CSV file (on a separate thread).
+:param args: argparse args for the program
+:param csvfilepath: The filepath of the CSV file to process
+:param results: List of results from processing the file
+'''
+#@background
+def processCSVFile(csvfilepath):
+    result = []
+    with io.open(csvfilepath, mode="r", encoding="utf-8") as csvfile:
+        reader = csv.reader(csvfile) # , delimiter=delimiter
+        columns = next(reader)
+        numrows = sum(1 for line in reader)
+        # new result row
+        result = []
+        result.append(csvfilepath)
+        result.append(str(len(columns)))
+        result.append(str(numrows))
+    return result
+
 def main():
     # handle command line args
-    parser = argparse.ArgumentParser(description='Script to get info on csv files', formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(description='Script to report on folder of CSV files', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_help = True
-    parser.add_argument('dir', help='root directory of all csv files you are interested in')
+    #parser.add_argument('dir', help='root directory of all csv files you are interested in')
     #parser.add_argument('-n', '--dim', dest='dim', type=int, nargs=2, default=(1024,768), help='dimensions as ints (def 1024 768)')
     #parser.add_argument('-c', '--columns', dest='columns', action='store_true', default=False, help='list the columns')
     #parser.add_argument('-nc', '--numcols', dest='numcols', action='store_true', default=False, help='get num columns')
@@ -82,10 +114,18 @@ def main():
     # global datafiles_prev
     # global report
 
+    # HARDCODED REQUEST: Windows folder path + current date (20220322)
+    args.dir = "\\\\jwbfilesvr1p\\JWBSFTPSHARE\\Amplifund\\Tables\\"
+    today = date.today()
+    todaystr = '{:4d}{:02d}{:02d}'.format(today.year, today.month, today.day)
+    args.dir = args.dir + todaystr + "\\"
+
     # dir not found
     if not os.path.exists(args.dir):
         print("ERROR: No directory found: '" + args.dir + "'")
         sys.exit(2)
+
+    print("Looking in " + args.dir)
 
     # # current report not found
     # if not os.path.exists(datafiles):
@@ -98,28 +138,22 @@ def main():
     csvfiles = findFiles(args.dir, 1, True, ['.csv'])
     print("Found " + str(len(csvfiles)) + " files")
 
-    # prep new file collection report
+    # iterate through them and process on separate processes (to utilize more CPU)
+    results = []
+    with ProcessPoolExecutor() as executor:
+        for result in executor.map(processCSVFile, (csvfiles)):
+            results.append(result)
+
+    # sort report by filepath
+    sorted(results, key=operator.itemgetter(0))
+
+    # write report
     with io.open(datafiles, mode="w+", encoding="utf-8", newline='') as wfile:
         #reportfile = io.open(report, mode="w+", encoding="utf-8")
         writer = csv.writer(wfile, delimiter=args.delimiter)
-        writer.writerow(["Filepath", "NumCols"])
-
-        # iterate through them
-        for i in range(0, len(csvfiles)):
-            filepath = csvfiles[i]
-            #print(".", end='')
-
-            # open each file for reading
-            with io.open(filepath, mode="r", encoding="utf-8") as csvfile:
-                #file = open(filepath, 'r')
-                reader = csv.reader(csvfile, delimiter=args.delimiter)
-                columns = next(reader)
-
-                # write new row
-                row = []
-                row.append(filepath)
-                row.append(str(len(columns)))
-                writer.writerow(row)
+        writer.writerow(["Filepath", "NumCols", "NumRows"])
+        for row in results:
+            writer.writerow(row)
 
     # # generate report between current and previous run
     # if os.path.exists(datafiles_prev):
