@@ -17,7 +17,7 @@ import csv
 from datetime import date
 
 
-datafiles = "datafiles.csv"
+# datafiles = "datafiles.csv"
 # datafiles_prev = "datafiles_prev.csv"
 # report = "report.csv"
 
@@ -99,9 +99,10 @@ def processCSVFile(csvfilepath):
 
 def main():
     # handle command line args
-    parser = argparse.ArgumentParser(description='Script to report on folder of CSV files', formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(description='Script to report on dir of CSV files', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_help = True
-    #parser.add_argument('dir', help='root directory of all csv files you are interested in')
+    parser.add_argument('csv', help='directory of csv files that will be processed')
+    parser.add_argument('out', help='full filepath of report')
     #parser.add_argument('-n', '--dim', dest='dim', type=int, nargs=2, default=(1024,768), help='dimensions as ints (def 1024 768)')
     #parser.add_argument('-c', '--columns', dest='columns', action='store_true', default=False, help='list the columns')
     #parser.add_argument('-nc', '--numcols', dest='numcols', action='store_true', default=False, help='get num columns')
@@ -110,22 +111,29 @@ def main():
     parser.add_argument('-d', '--delimiter', dest='delimiter', type=str, default=',', help='delimiter character ("," " " "\\t")')
     args = parser.parse_args()
 
-    global datafiles
+    # global datafiles
     # global datafiles_prev
     # global report
 
     # HARDCODED REQUEST: Windows folder path + current date (20220322)
-    args.dir = "\\\\jwbfilesvr1p\\JWBSFTPSHARE\\Amplifund\\Tables\\"
+    #args.csv = "\\\\jwbfilesvr1p\\JWBSFTPSHARE\\Amplifund\\Tables\\"
     today = date.today()
     todaystr = '{:4d}{:02d}{:02d}'.format(today.year, today.month, today.day)
-    args.dir = args.dir + todaystr + "\\"
+    args.csv = os.path.join(args.csv, todaystr)
 
-    # dir not found
-    if not os.path.exists(args.dir):
-        print("ERROR: No directory found: '" + args.dir + "'")
+    print(args.csv)
+    print(os.path.dirname(args.out))
+    print(args.out)
+
+    # csv dir not found
+    if not os.path.exists(args.csv):
+        print("ERROR: Input csv dir not found or can't access: '" + args.csv + "'")
         sys.exit(2)
 
-    print("Looking in " + args.dir)
+    # out dir not found
+    if not os.path.exists(os.path.dirname(args.csv)):
+        print("ERROR: Report dir not found or can't access: '" + os.path.dirname(args.csv) + "'")
+        sys.exit(2)
 
     # # current report not found
     # if not os.path.exists(datafiles):
@@ -135,7 +143,8 @@ def main():
     #     shutil.copy(datafiles, datafiles_prev)
 
     # find all .csv files recursively
-    csvfiles = findFiles(args.dir, 1, True, ['.csv'])
+    print("Looking for csv in " + args.csv)
+    csvfiles = findFiles(args.csv, 1, True, ['.csv'])
     print("Found " + str(len(csvfiles)) + " files")
 
     # iterate through them and process on separate processes (to utilize more CPU)
@@ -148,7 +157,8 @@ def main():
     sorted(results, key=operator.itemgetter(0))
 
     # write report
-    with io.open(datafiles, mode="w+", encoding="utf-8", newline='') as wfile:
+    print("Writing report to " + args.out)
+    with io.open(args.out, mode="w+", encoding="utf-8", newline='') as wfile:
         #reportfile = io.open(report, mode="w+", encoding="utf-8")
         writer = csv.writer(wfile, delimiter=args.delimiter)
         writer.writerow(["Filepath", "NumCols", "NumRows"])
